@@ -1,4 +1,4 @@
 module YetiException
   # yeti_exception version
-  VERSION = "1.0.0"
+  VERSION = "1.0.0-pre"
 end

@@ -7,8 +7,8 @@ require 'yeti_exception/version'
 Gem::Specification.new do |gem|
   gem.name          = "yeti_exception"
   gem.version       = YetiException::VERSION
-  gem.summary       = %q{TODO: Summary}
-  gem.description   = %q{TODO: Description}
+  gem.summary       = %q{Enhanced exceptions with a details hash and more}
+  gem.description   = %q{Enhanced exceptions with a details hash and more}
   gem.license       = "MIT"
   gem.authors       = ["Yesware, Inc."]
   gem.email         = "engineering@yesware.com"
