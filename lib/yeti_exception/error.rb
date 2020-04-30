@@ -28,7 +28,8 @@ module YetiException
     attr_reader :klass
     # @return [Hash] Arbitrary details about the exception
     attr_reader :details
-    # @return [TrueClass, FalseClass] Whether the error is transient
+    # @return [TrueClass, FalseClass] Whether the error is transient,
+    #   i.e. possible to succeed if retried in the future
     attr_reader :transient
     # @return [Integer] Corresponding HTTP status
     attr_reader :http_status
