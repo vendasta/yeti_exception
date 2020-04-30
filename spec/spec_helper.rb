@@ -1,4 +1,4 @@
 require 'rspec'
-require 'yeti_exception/version'
+require 'yeti_exception'
 
 include YetiException
