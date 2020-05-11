@@ -114,14 +114,14 @@ The static message will not overwrite a `:msg` key included explicitly in the de
 
 ### The `YetiException::Helpers` mixin
 
-`YetiException::Helpers` is a mixin that provides two convenience methods.  Each
-is defined as both a class and instance method.
+`YetiException::Helpers` is a mixin that provides a `raise_exception`
+convenience method, defined as both a class and instance method.
 
-The first is `raise_exception`.  `YetiException::Error` has a `klass` attribute
-containing the class in which the exception was raised so that it may be used in
-log searching.  While the raising class can be inferred from the exception's
-backtrace, the class name is more intuitive.  `raise_exception` removes the need
-to reference the class explicitly.
+`YetiException::Error` has a `klass` attribute containing the class in which the
+exception was raised so that it may be used in log searching.  While the raising
+class can be inferred from the exception's backtrace, the class name is more
+intuitive.  `raise_exception` removes the need to reference the class
+explicitly.
 
     class MyClass
       include YetiException::Helpers
@@ -146,56 +146,6 @@ passed to the exception's `#initialize` method:
                     { some: 'details' },       # details
                     false,                     # transient
                     400)                       # HTTP status
-
-The second convenience method is `wrap_exception` This is used to wrap arbitrary
-exceptions in a `YetiException::Error` and re-raise the new exception.  It adds
-the same attributes as `raise_exception`, but also does the following:
-
-- It maintains the original exception's backtrace.  This useful for identifying
-  where the exception was originally raised, not where it was wrapped and
-  reraised.
-
-- It includes the original exception's message in the `:msg` key of the details
-  hash.
-
-Note that this example uses the class method instead of the instance method to
-demonstrate both cases.
-
-    class OtherClass
-      ORIGINAL_ERROR = StandardError.new('Original error')
-
-      def self.call
-        raise ORIGINAL_ERROR
-      end
-    end
-
-    class MyClass
-      include YetiException::Helpers
-
-      def self.call
-        OtherClass.call
-      rescue => ex
-        wrap_exception(ex, YetiException::Error, { some: 'details' })
-      end
-    end
-
-    ex = begin
-      MyClass.call
-    rescue => exception
-      exception
-    end
-
-    ex.klass #=> MyClass
-    ex.details #=> {:some=>"details", :msg=>"Original error"}
-    ex.backtrace == OtherClass::ORIGINAL_ERROR.backtrace #=> true
-
-Again, a custom subclass and additional parameter can be used:
-
-    wrap_exception(ex,                        # original exception
-                   MyCustomError,             # exception class
-                   { some: 'details' },       # details
-                   false,                     # transient
-                   400)                       # HTTP status
 
 ### Integration with [YetiLogger](https://github.com/Yesware/yeti_logger)
 
@@ -228,12 +178,19 @@ for all errors, it makes sense to define a `rescue_from` hander in
       # Define a catch-all handler for other exceptions.  Rails searches for a
       # matching handler in the reverse order of their definitions.
       rescue_from StandardError do |ex|
+        # If yeti_logger is used
+        log_error({
+                    msg: 'error',
+                    error: ex.message
+                  }, ex)
         render json: { error: ex.message }, status: 500
       end
 
       # For the YetiException exceptions with richer data, use the specified
       # details and status.
       rescue_from YetiException::Error do |ex|
+        # If yeti_logger is used
+        log_error(ex.details, ex)
         render json: { error: ex.details }, status: ex.status
       end
     end
@@ -251,6 +208,11 @@ A framework-agnostic example:
       def entry_point
         do_something
       rescue YetiException::Error => ex
+
+        # If yeti_logger is used
+        log_error(ex.details, ex)
+
+
         if ex.transient
 
           # retry the job
