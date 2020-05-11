@@ -1,1 +1,5 @@
 require 'yeti_exception/version'
+require 'yeti_exception/error'
+require 'yeti_exception/final_error'
+require 'yeti_exception/client_error'
+require 'yeti_exception/helpers'
