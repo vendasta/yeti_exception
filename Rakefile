@@ -23,3 +23,4 @@ task :default => :spec
 require 'yard'
 YARD::Rake::YardocTask.new  
 task :doc => :yard
+task :ci => ['spec']
