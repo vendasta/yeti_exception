@@ -1,0 +1,6 @@
+services:
+  - name: yeti_exception
+    owner: honey-badger
+    language: ruby
+    nonServiceType: library
+    description: "Enhanced exceptions with a details hash and more"
