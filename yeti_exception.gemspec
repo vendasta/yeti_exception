@@ -33,5 +33,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rake', '~> 13.0'
   gem.add_development_dependency 'rspec', '~> 3.0'
   gem.add_development_dependency 'rubygems-tasks', '~> 0.2'
-  gem.add_development_dependency 'yard', '~> 0.8'
+  gem.add_development_dependency 'yard', '~> 0.9', '>= 0.9.20'
 end
